@@ -80,7 +80,7 @@ public class StackTraceManagerModule extends BaseJavaModule implements Exception
         //We try as best as we can to stick to that format so one could easily use a source mapper for JS.
         //For that reason we use empty string for class, the line number for the filename and column
         //for the line number
-        
+
 
     }
 
