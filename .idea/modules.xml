@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/RNStackTracer.iml" filepath="$PROJECT_DIR$/RNStackTracer.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/rnstacktracer/rnstacktracer.iml" filepath="$PROJECT_DIR$/rnstacktracer/rnstacktracer.iml" />
     </modules>
   </component>
 </project>
