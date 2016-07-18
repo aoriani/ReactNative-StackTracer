@@ -8,6 +8,8 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.ReactConstants;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -74,14 +76,36 @@ public class StackTraceManagerModule extends BaseJavaModule implements Exception
 
     @ReactMethod
     @Override
-    public void reportFatalException(String title, ReadableArray details, int exceptionId) {
+    public void reportFatalException(String title, ReadableArray stack, int exceptionId) {
         //We synthesize a Java stack trace from the JS stack trace. That way distinct JS stack will
         //have distinct entries in Crashlytics. A JS stack trace follows the <method>@<line>:<column>.
         //We try as best as we can to stick to that format so one could easily use a source mapper for JS.
         //For that reason we use empty string for class, the line number for the filename and column
         //for the line number
 
+        final int stackFrameSize = stack.size();
+        List<StackTraceElement> synthStackTrace = new ArrayList<>(stackFrameSize);
+        for (int i = 0; i < stackFrameSize; i++) {
+            ReadableMap frame = stack.getMap(i);
+            final String className = "";
+            final String methodName = frame.getString("methodName");
+            final String lineNumber = stackFrameToModuleId(frame) + frame.getInt("lineNumber");
+            int column = 0;
+            if (frame.hasKey("column") &&
+                    !frame.isNull("column") &&
+                    frame.getType("column") == ReadableType.Number) {
+                column = frame.getInt("column");
+            }
 
+            StackTraceElement stackFrame = new StackTraceElement(className, methodName,
+                    lineNumber, column);
+            synthStackTrace.add(stackFrame);
+        }
+
+        StackTraceElement[] stackTrace = synthStackTrace.toArray(new StackTraceElement[synthStackTrace.size()]);
+        ReactNativeException reactNativeException = new ReactNativeException(title);
+        reactNativeException.setStackTrace(stackTrace);
+        throw reactNativeException;
     }
 
     @ReactMethod
